@@ -57,8 +57,8 @@ Return
 
 Craft:
 	Gui, Submit  ; Save the input from the user to each control's associated variable.
-	Game = "FINAL FANTASY XIV"
-	WinActivate %Game%
+	Game := "FINAL FANTASY XIV"
+	WinActivate, %Game%
 	
 	SleepTime := (Time * 1000)
 	Delay = 500
@@ -66,30 +66,30 @@ Craft:
 	
 	TrayTip,, Crafting started. ,, 1
 	
-	loop %Total%
+	Loop, %Total%
 	{
 	; Check for user to break
 	If Breakloop
-		break
+		Break
 	ControlSend,,{%Confirm%},%Game% ; Summon the hand
-	Sleep Delay
+	Sleep, Delay
 	ControlSend,,{%Confirm%},%Game% ; Select the recipe
-	Sleep Delay
+	Sleep, Delay
 	ControlSend,,{%Confirm%},%Game% ; Starts crafting
-	Sleep Delay*2 ; Wait for us to sit down
+	Sleep, Delay*2 ; Wait for us to sit down
 	
 	If Breakloop
-		break
+		Break
 	ControlSend,,{%Button%},%Game% ; Hit your crafting macro button
 	If Breakloop
-		break
+		Break
 		
 	Sleep %SleepTime% ; Wait for crafting macro to finish
 	}
 	
 	If (Breakloop)
 		TrayTip,, Crafting stopped by user. ,, 1
-	else
+	Else
 		TrayTip,, Crafting finished. ,, 1
 	
 Gui, Destroy
