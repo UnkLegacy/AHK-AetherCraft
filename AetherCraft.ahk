@@ -1,4 +1,7 @@
-﻿#Persistent ; Keeps script permanently running
+﻿; Originally created by Staren Alloria.
+; Improvements by Lovo'tan Khatshri.
+
+#Persistent ; Keeps script permanently running
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 #SingleInstance, Force ; Ensures that there is only a single instance of this script running.
 #InstallKeybdHook
@@ -42,12 +45,12 @@ f10::
 ; Ctrl+Alt+C - Display crafting window
 Gui, Add, Text,, Total Crafts:	; Label for total crafts
 Gui, Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
-Gui, Add, Text,, Macro button (eg, Numpad0):
-Gui, Add, Text,, Confirm Button:
+Gui, Add, Text,, Macro button (eg, Numpad0):  ; Label for which button the crafting macro resides on
+Gui, Add, Text,, Confirm Button:   ; Label for the button used to confirm things in the game.
 Gui, Add, Edit, vTotal ym  ; The ym option starts a new column of controls.
-Gui, Add, Edit, vTime
-Gui, Add, Edit, vButton
-Gui, Add, Edit, vConfirm
+Gui, Add, Edit, vTime ; Time, in seconds to craft once.
+Gui, Add, Edit, vButton ; Macro button
+Gui, Add, Edit, vConfirm ; Confirm button
 Gui, Add, Button, gCraft, &Craft ; The function Craft will be run when the Craft button is pressed.
 Gui, Show,, Macro Settings
 Return
