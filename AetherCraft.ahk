@@ -57,40 +57,54 @@ Return
 
 Craft:
 	Gui, Submit  ; Save the input from the user to each control's associated variable.
-	Game := "FINAL FANTASY XIV"
-	WinActivate, %Game%
+	arg1 := "ahk_parent"
+	Game := "ahk_exe ffxiv_dx11.exe"
+	GameTitle := "FINAL FANTASY XIV"
 	
+	; Variables
 	SleepTime := (Time * 1000)
-	Delay = 500
+	Delay = 1500
 	Breakloop := false
 	
-	TrayTip,, Crafting started. ,, 1
+	; Let user know the script is starting
+	WinActivate, %GameTitle%
+	Sleep, Delay
+	Send, /
+	Sleep, Delay * .5
+	Send, echo Crafting by AHK started. <se.13> {enter}
+	Sleep, Delay
 	
 	Loop, %Total%
 	{
 	; Check for user to break
 	If Breakloop
 		Break
-	ControlSend,,{%Confirm%},%Game% ; Summon the hand
+	ControlSend, %arg1%, {%Confirm%}, %Game% ; Summon the hand
 	Sleep, Delay
-	ControlSend,,{%Confirm%},%Game% ; Select the recipe
+	ControlSend, %arg1%, {%Confirm%}, %Game% ; Select the recipe
 	Sleep, Delay
-	ControlSend,,{%Confirm%},%Game% ; Starts crafting
+	ControlSend, %arg1%, {%Confirm%}, %Game% ; Starts crafting
 	Sleep, Delay*2 ; Wait for us to sit down
 	
 	If Breakloop
 		Break
-	ControlSend,,{%Button%},%Game% ; Hit your crafting macro button
+	ControlSend, %arg1%, {%Button%}, %Game% ; Hit your crafting macro button
 	If Breakloop
 		Break
 		
-	Sleep %SleepTime% ; Wait for crafting macro to finish
+	Sleep, %SleepTime% ; Wait for crafting macro to finish
 	}
 	
+	; Let user know the script is finished
+	WinActivate, %GameTitle%
+	Sleep, Delay
+	Send, /
+	Sleep, Delay * .5
 	If (Breakloop)
-		TrayTip,, Crafting stopped by user. ,, 1
+		Send, echo Crafting stopped by user. <se.11>
 	Else
-		TrayTip,, Crafting finished. ,, 1
+		Send, echo Crafting by AHK completed. <se.1>
+	Send, {enter}
 	
 Gui, Destroy
 Return
