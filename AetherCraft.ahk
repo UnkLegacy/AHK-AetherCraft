@@ -44,7 +44,7 @@ Return
 
 f6::
 ; F12 - Market Board Scan
-Gui, Add, Text,, Total Items (Blank = 100):	; Label for total crafts
+Gui, Add, Text,, Total Items (Blank = 100):	; Label for total items
 Gui, Add, Text,, Confirm Button (Blank = H):   ; Label for the button used to confirm things in the game.
 Gui, Add, Edit, vTotal ym  ; The ym option starts a new column of controls.
 Gui, Add, Edit, vConfirm ; Confirm button
@@ -59,7 +59,7 @@ Scan:
 	GameTitle := "FINAL FANTASY XIV"
 	
 	; Variables
-	Delay = 500 ; in microseconds, eg 750 = 75ms
+	Delay = 500 ; in milliseconds
 	Breakloop := false
 	
 	If !Total
@@ -75,7 +75,7 @@ Scan:
 	Send, echo Scanning by AHK started. <se.13> {enter}
 	Sleep, Delay
 	
-	Loop, %Total%
+	Loop, %Total% ; Main loop to scan Market Board
 	{
 	; Check for user to break
 	If Breakloop
