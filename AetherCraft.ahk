@@ -59,13 +59,21 @@ Scan:
 	GameTitle := "FINAL FANTASY XIV"
 	
 	; Variables
-	Delay = 500 ; in milliseconds
+	Delay = 500 ; in milliseconds, increase this number to go slower.
 	Breakloop := false
 	
 	If !Total
-		Total = 100
+		Total = 100 ; Max number of items in list.  Do not change.
 	If !Confirm
-		Confirm := "Numpad0"
+		Confirm := "Numpad0" ; Default Confirm button.  Change to your keybinding if you want.
+		
+	; KeyBinds
+	; These are the default FFXIV.  Under Keybinds -> System -> Top few keybindings
+	; Either change these here or to what's listed here.  These are the arrow keys: Up, Down, Right.
+	goUp := "Up" ; Move Cursor up/Cycle up through Party List
+	goDown := "Down" ; Move Cursor down/Cycle down through Party List
+	goRight := "Right" ; Move Cursor/Target Cursor Right
+	goEsc := "Esc" ; Close All UI Components
 	
 	; Let user know the script is starting
 	WinActivate, %GameTitle%
@@ -85,11 +93,11 @@ Scan:
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {Up}, %Game% ; Go up in item Window, Step 1 of 2
+	ControlSend, %arg1%, {%goUp%}, %Game% ; Go up in item Window, Step 1 of 2
 	Sleep, Delay
 	If Breakloop
 		Break		
-	ControlSend, %arg1%, {Right}, %Game% ; Go right in item Window, Step 2 of 2
+	ControlSend, %arg1%, {%goRight%}, %Game% ; Go right in item Window, Step 2 of 2
 	Sleep, Delay
 	If Breakloop
 		Break
@@ -97,15 +105,15 @@ Scan:
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {Esc}, %Game% ; Leave Item History
+	ControlSend, %arg1%, {%goEsc%}, %Game% ; Leave Item History
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {Esc}, %Game% ; Leave Item
+	ControlSend, %arg1%, {%goEsc%}, %Game% ; Leave Item
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {Down}, %Game% ; Go to Next Item
+	ControlSend, %arg1%, {%goDown%}, %Game% ; Go to Next Item
 	Sleep, Delay
 	}
 	
@@ -147,11 +155,11 @@ Craft:
 	
 	; Variables
 	SleepTime := (Time * 1000)
-	Delay = 1500
+	Delay = 1500 ; in milliseconds, increase this number to go slower.
 	Breakloop := false
 	
 	If !Confirm
-		Confirm := "Numpad0"
+		Confirm := "Numpad0" ; Default Confirm button.  Change to your keybinding if you want.
 	
 	; Let user know the script is starting
 	WinActivate, %GameTitle%
