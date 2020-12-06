@@ -45,7 +45,7 @@ Return
 f6::
 ; F12 - Market Board Scan
 Gui, Add, Text,, Total Items (Blank = 100):	; Label for total items
-Gui, Add, Text,, Confirm Button (Blank = H):   ; Label for the button used to confirm things in the game.
+Gui, Add, Text,, Confirm Button (Blank = Numpad0):   ; Label for the button used to confirm things in the game.
 Gui, Add, Edit, vTotal ym  ; The ym option starts a new column of controls.
 Gui, Add, Edit, vConfirm ; Confirm button
 Gui, Add, Button, gScan, &Scan ; The function Scan will be run when the Scan button is pressed.
