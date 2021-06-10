@@ -59,7 +59,7 @@ Scan:
 	GameTitle := "FINAL FANTASY XIV"
 	
 	; Variables
-	Delay = 500 ; in milliseconds, increase this number to go slower.
+	Delay = 400 ; in milliseconds, increase this number to go slower.
 	Breakloop := false
 	
 	If !Total
@@ -214,4 +214,8 @@ Return
 RemoveTrayTip:
 	SetTimer, RemoveTrayTip, Off 
 	TrayTip 
-Return 
+	Return 
+
+GuiClose:
+	Gui, Destroy
+	Return

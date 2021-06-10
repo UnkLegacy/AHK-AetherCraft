@@ -6,7 +6,7 @@ A collection of AHK scripts for use for the Jenova Free Company, Aether Craft
 - `F10` - Opens the Crafting GUI window.  *** Warning: Currently only works for 1 button macros ***
 - `F12` - Aborts crafting.
 
-### How to use Crafting GUI
+### How to use Scanning GUI
 - Note: Ensure the Hand is showing on the top most item in the Market Board.
 - Total Items - Enter in the Total Number of items in the Market Board Window.  Leave blank for all 100 items.
 - Confirm Button - Enter the key used to Confirm.  Leave blank for default of Numpad0.
