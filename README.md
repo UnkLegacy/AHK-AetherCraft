@@ -1,6 +1,11 @@
 # AHK-AetherCraft
 A collection of AHK scripts for use for the Jenova Free Company, Aether Craft
 
+## AetherCraft.ini Setup
+- Do NOT change anything under the [GameLocation] section.
+- Change [StaticUserSettings] to your Up, Down, Right, Esc, and Confirm keybinds from FFXIV.
+- [LastCraft] is just there to store your previous crafting session.  So if you frequently run the script with the same settings, it will remember them.
+
 ## Crafting Specific Macros (Must have FF14 as active Window)
 - `F6`  - Opens the Scanning GUI window.
 - `F10` - Opens the Crafting GUI window.  *** Warning: Currently only works for 1 button macros ***

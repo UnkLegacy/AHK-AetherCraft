@@ -50,15 +50,12 @@ GoSub ReadIni
 Gui, Add, Text,, Total Items (Blank = 100):	; Label for total items
 Gui, Add, Text,, Confirm Button (Blank = Numpad0):   ; Label for the button used to confirm things in the game.
 Gui, Add, Edit, w75 vTotal ym  ; The ym option starts a new column of controls.
-Gui, Add, Edit, w75 vConfirm, %Confirm% ; Confirm button
 Gui, Add, Button, gScan, &Scan ; The function Scan will be run when the Scan button is pressed.
 Gui, Show,, Macro Settings
 Return
 
 Scan:
 	Gui, Submit  ; Save the input from the user to each control's associated variable.
-	
-	IniWrite, "%Confirm%", %IniLocation%, UserSettings, ConfirmButton
 	
 	; Variables
 	Delay = 400 ; in milliseconds, increase this number to go slower.
@@ -131,60 +128,21 @@ Gui, Add, Text,, Macro button (eg, Numpad0):  ; Label for which button the craft
 Gui, Add, Text,, Confirm Button:   ; Label for the button used to confirm things in the game.
 Gui, Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
 Gui, Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
-Gui, Add, Edit, w75 vButton, %craftButton% ; Macro button
-Gui, Add, Edit, w75 vConfirm, %Confirm% ; Confirm button
+Gui, Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
 Gui, Add, Button, gCraft, &Craft ; The function Craft will be run when the Craft button is pressed.
 Gui, Show,, Macro Settings
 Return
 
-f11::
-; F11 - test
-GoSub ReadIni
-Gui, Add, Text,, Total Crafts:	; Label for total crafts
-Gui, Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
-Gui, Add, Text,, Macro button (eg, Numpad0):  ; Label for which button the crafting macro resides on
-Gui, Add, Text,, Confirm Button:   ; Label for the button used to confirm things in the game.
-Gui, Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
-Gui, Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
-Gui, Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
-Gui, Add, Edit, w75 vConfirm, %Confirm% ; Confirm button
-Gui, Add, Button, gTest, &Test ; The function Craft will be run when the Craft button is pressed.
-Gui, Show,, DEBUG Macro Settings
-Return
-
-Test:
-	Gui, Submit  ; Save the input from the user to each control's associated variable.
-	
-	If (Total != craftTotal)
-		{
-		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal
-		MsgBox % "Total = " . Total . " != " craftTotal
-		}
-	If (Time != craftTime)
-		{
-		IniWrite, "%Time%", %IniLocation%, LastCraft, CraftTime
-		MsgBox % "Time = " . Time . " != " craftTime
-		}
-	If (MacroButton != craftButton)
-		{
-		IniWrite, "%MacroButton%", %IniLocation%, LastCraft, CraftMacroButton
-		MsgBox % "MacroButton = " . MacroButton . " != " craftButton
-		}
-	IniWrite, "%Confirm%", %IniLocation%, UserSettings, ConfirmButton
-	
-	Gui, Destroy
-	Return
-
 Craft:
 	Gui, Submit  ; Save the input from the user to each control's associated variable.
 	
-	If (%Total% != %craftTotal%)
-		IniWrite, "%Total%", %IniLocation%, LastCraft, Total
-	If (%Time% != %craftTime%)
-		IniWrite, "%Time%", %IniLocation%, LastCraft, Time
-	If (%Button% != %craftButton%)
-		IniWrite, "%Button%", %IniLocation%, LastCraft, CraftMacroButton
-	IniWrite, "%Confirm%", %IniLocation%, UserSettings, ConfirmButton
+	; Write user settings back to ini file.  Only if they changed.
+	If (Total != craftTotal)
+		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal
+	If (Time != craftTime)
+		IniWrite, "%Time%", %IniLocation%, LastCraft, CraftTime
+	If (MacroButton != craftButton)
+		IniWrite, "%MacroButton%", %IniLocation%, LastCraft, CraftMacroButton
 	
 	; Variables
 	SleepTime := (Time * 1000)
@@ -213,7 +171,7 @@ Craft:
 	
 	If Breakloop
 		Break
-	ControlSend, %AHKParent%, {%Button%}, %Game% ; Hit your crafting macro button
+	ControlSend, %AHKParent%, {%MacroButton%}, %Game% ; Hit your crafting macro button
 	If Breakloop
 		Break
 		
@@ -257,11 +215,11 @@ ReadIni:
 	IniRead, Game, %IniLocation%, GameLocation, Game
 	IniRead, GameTitle, %IniLocation%, GameLocation, GameTitle
 
-	IniRead, goUp, %IniLocation%, UserSettings, GoUp
-	IniRead, goRight, %IniLocation%, UserSettings, GoRight
-	IniRead, goDown, %IniLocation%, UserSettings, GoDown
-	IniRead, goEsc, %IniLocation%, UserSettings, GoEsc
-	IniRead, Confirm, %IniLocation%, UserSettings, ConfirmButton
+	IniRead, goUp, %IniLocation%, StaticUserSettings, UpButton
+	IniRead, goRight, %IniLocation%, StaticUserSettings, RightButton
+	IniRead, goDown, %IniLocation%, StaticUserSettings, DownButton
+	IniRead, goEsc, %IniLocation%, StaticUserSettings, EscButton
+	IniRead, Confirm, %IniLocation%, StaticUserSettings, ConfirmButton
 
 	IniRead, craftTotal, %IniLocation%, LastCraft, CraftTotal
 	IniRead, craftTime, %IniLocation%, LastCraft, CraftTime
