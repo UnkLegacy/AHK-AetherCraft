@@ -48,7 +48,6 @@ f6::
 ; F6 - Market Board Scan
 GoSub ReadIni
 Gui, Add, Text,, Total Items (Blank = 100):	; Label for total items
-Gui, Add, Text,, Confirm Button (Blank = Numpad0):   ; Label for the button used to confirm things in the game.
 Gui, Add, Edit, w75 vTotal ym  ; The ym option starts a new column of controls.
 Gui, Add, Button, gScan, &Scan ; The function Scan will be run when the Scan button is pressed.
 Gui, Show,, Macro Settings
@@ -124,8 +123,7 @@ f10::
 GoSub ReadIni
 Gui, Add, Text,, Total Crafts:	; Label for total crafts
 Gui, Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
-Gui, Add, Text,, Macro button (eg, Numpad0):  ; Label for which button the crafting macro resides on
-Gui, Add, Text,, Confirm Button:   ; Label for the button used to confirm things in the game.
+Gui, Add, Text,, Macro button (eg, Numpad1):  ; Label for which button the crafting macro resides on
 Gui, Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
 Gui, Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
 Gui, Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
