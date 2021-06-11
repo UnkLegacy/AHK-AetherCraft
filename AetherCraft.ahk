@@ -9,6 +9,8 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
+IniLocation = %A_ScriptDir%\AetherCraft.ini
+
 ; Table of Contents:
 ; 1. Ctrl+S or Ctrl+R - Reload Script.  Only works in NotePad++
 ; 2. Ctrl+H - Shows the ReadMe file.
@@ -43,38 +45,21 @@ Return
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 f6::
-; F12 - Market Board Scan
+; F6 - Market Board Scan
+GoSub ReadIni
 Gui, Add, Text,, Total Items (Blank = 100):	; Label for total items
-Gui, Add, Text,, Confirm Button (Blank = Numpad0):   ; Label for the button used to confirm things in the game.
-Gui, Add, Edit, vTotal ym  ; The ym option starts a new column of controls.
-Gui, Add, Edit, vConfirm ; Confirm button
+Gui, Add, Edit, w75 vTotal ym  ; The ym option starts a new column of controls.
 Gui, Add, Button, gScan, &Scan ; The function Scan will be run when the Scan button is pressed.
 Gui, Show,, Macro Settings
 Return
 
 Scan:
 	Gui, Submit  ; Save the input from the user to each control's associated variable.
-	arg1 := "ahk_parent"
-	Game := "ahk_exe ffxiv_dx11.exe"
-	GameTitle := "FINAL FANTASY XIV"
 	
 	; Variables
 	Delay = 400 ; in milliseconds, increase this number to go slower.
 	Breakloop := false
-	
-	If !Total
-		Total = 100 ; Max number of items in list.  Do not change.
-	If !Confirm
-		Confirm := "Numpad0" ; Default Confirm button.  Change to your keybinding if you want.
-		
-	; KeyBinds
-	; These are the default FFXIV.  Under Keybinds -> System -> Top few keybindings
-	; Either change these here or to what's listed here.  These are the arrow keys: Up, Down, Right.
-	goUp := "Up" ; Move Cursor up/Cycle up through Party List
-	goDown := "Down" ; Move Cursor down/Cycle down through Party List
-	goRight := "Right" ; Move Cursor/Target Cursor Right
-	goEsc := "Esc" ; Close All UI Components
-	
+
 	; Let user know the script is starting
 	WinActivate, %GameTitle%
 	Sleep, Delay
@@ -89,31 +74,31 @@ Scan:
 	If Breakloop
 		Break
 	; ControlSend, Parent of Window, {Button to Send}, Actual Window to Send to
-	ControlSend, %arg1%, {%Confirm%}, %Game% ; Enter into the Item Detail
+	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Enter into the Item Detail
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {%goUp%}, %Game% ; Go up in item Window, Step 1 of 2
+	ControlSend, %AHKParent%, {%goUp%}, %Game% ; Go up in item Window, Step 1 of 2
 	Sleep, Delay
 	If Breakloop
 		Break		
-	ControlSend, %arg1%, {%goRight%}, %Game% ; Go right in item Window, Step 2 of 2
+	ControlSend, %AHKParent%, {%goRight%}, %Game% ; Go right in item Window, Step 2 of 2
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {%Confirm%}, %Game% ; Open Item History
+	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Open Item History
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {%goEsc%}, %Game% ; Leave Item History
+	ControlSend, %AHKParent%, {%goEsc%}, %Game% ; Leave Item History
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {%goEsc%}, %Game% ; Leave Item
+	ControlSend, %AHKParent%, {%goEsc%}, %Game% ; Leave Item
 	Sleep, Delay
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {%goDown%}, %Game% ; Go to Next Item
+	ControlSend, %AHKParent%, {%goDown%}, %Game% ; Go to Next Item
 	Sleep, Delay
 	}
 	
@@ -134,32 +119,33 @@ Return
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 f10::
-; f10 - Display crafting window
+; F10 - Auto Craft
+GoSub ReadIni
 Gui, Add, Text,, Total Crafts:	; Label for total crafts
 Gui, Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
-Gui, Add, Text,, Macro button (eg, Numpad0):  ; Label for which button the crafting macro resides on
-Gui, Add, Text,, Confirm Button:   ; Label for the button used to confirm things in the game.
-Gui, Add, Edit, vTotal ym  ; The ym option starts a new column of controls.
-Gui, Add, Edit, vTime ; Time, in seconds to craft once.
-Gui, Add, Edit, vButton ; Macro button
-Gui, Add, Edit, vConfirm ; Confirm button
+Gui, Add, Text,, Macro button (eg, Numpad1):  ; Label for which button the crafting macro resides on
+Gui, Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
+Gui, Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
+Gui, Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
 Gui, Add, Button, gCraft, &Craft ; The function Craft will be run when the Craft button is pressed.
 Gui, Show,, Macro Settings
 Return
 
 Craft:
 	Gui, Submit  ; Save the input from the user to each control's associated variable.
-	arg1 := "ahk_parent"
-	Game := "ahk_exe ffxiv_dx11.exe"
-	GameTitle := "FINAL FANTASY XIV"
+	
+	; Write user settings back to ini file.  Only if they changed.
+	If (Total != craftTotal)
+		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal
+	If (Time != craftTime)
+		IniWrite, "%Time%", %IniLocation%, LastCraft, CraftTime
+	If (MacroButton != craftButton)
+		IniWrite, "%MacroButton%", %IniLocation%, LastCraft, CraftMacroButton
 	
 	; Variables
 	SleepTime := (Time * 1000)
 	Delay = 1500 ; in milliseconds, increase this number to go slower.
 	Breakloop := false
-	
-	If !Confirm
-		Confirm := "Numpad0" ; Default Confirm button.  Change to your keybinding if you want.
 	
 	; Let user know the script is starting
 	WinActivate, %GameTitle%
@@ -174,16 +160,16 @@ Craft:
 	; Check for user to break
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {%Confirm%}, %Game% ; Summon the hand
+	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Summon the hand
 	Sleep, Delay
-	ControlSend, %arg1%, {%Confirm%}, %Game% ; Select the recipe
+	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select the recipe
 	Sleep, Delay
-	ControlSend, %arg1%, {%Confirm%}, %Game% ; Starts crafting
+	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Starts crafting
 	Sleep, Delay*2 ; Wait for us to sit down
 	
 	If Breakloop
 		Break
-	ControlSend, %arg1%, {%Button%}, %Game% ; Hit your crafting macro button
+	ControlSend, %AHKParent%, {%MacroButton%}, %Game% ; Hit your crafting macro button
 	If Breakloop
 		Break
 		
@@ -205,7 +191,7 @@ Gui, Destroy
 Return
 
 f12::
-; Breaks crafting loop
+; F12 - Breaks the automation loops
 Breakloop := true
 TrayTip,, Stopping... Please wait. ,, 18
 Return
@@ -216,6 +202,24 @@ RemoveTrayTip:
 	TrayTip 
 	Return 
 
+; Closes windows properly
 GuiClose:
 	Gui, Destroy
+	Return
+	
+; Read the Ini file for updated settings
+ReadIni:
+	IniRead, AHKParent, %IniLocation%, GameLocation, AHKParent
+	IniRead, Game, %IniLocation%, GameLocation, Game
+	IniRead, GameTitle, %IniLocation%, GameLocation, GameTitle
+
+	IniRead, goUp, %IniLocation%, StaticUserSettings, UpButton
+	IniRead, goRight, %IniLocation%, StaticUserSettings, RightButton
+	IniRead, goDown, %IniLocation%, StaticUserSettings, DownButton
+	IniRead, goEsc, %IniLocation%, StaticUserSettings, EscButton
+	IniRead, Confirm, %IniLocation%, StaticUserSettings, ConfirmButton
+
+	IniRead, craftTotal, %IniLocation%, LastCraft, CraftTotal
+	IniRead, craftTime, %IniLocation%, LastCraft, CraftTime
+	IniRead, craftButton, %IniLocation%, LastCraft, CraftMacroButton
 	Return
