@@ -11,6 +11,8 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 IniLocation = %A_ScriptDir%\AetherCraft.ini
 
+GoSub CreateIfNoExist
+
 ; Table of Contents:
 ; 1. Ctrl+S or Ctrl+R - Reload Script.  Only works in NotePad++
 ; 2. Ctrl+H - Shows the ReadMe file.
@@ -235,3 +237,22 @@ ReadIni:
 	IniRead, craftTime, %IniLocation%, LastCraft, CraftTime
 	IniRead, craftButton, %IniLocation%, LastCraft, CraftMacroButton
 	Return
+	
+CreateIfNoExist:
+	If !(FileExist("Aethercraft.ini"))
+	{
+		IniWrite, "ahk_parent", %IniLocation%, GameLocation, AHKParent
+		IniWrite, "ahk_exe ffxiv_dx11.exe", %IniLocation%, GameLocation, Game
+		IniWrite, "FINAL FANTASY XIV", %IniLocation%, GameLocation, GameTitle
+
+		IniWrite, "Up", %IniLocation%, StaticUserSettings, UpButton
+		IniWrite, "Right", %IniLocation%, StaticUserSettings, RightButton
+		IniWrite, "Down", %IniLocation%, StaticUserSettings, DownButton
+		IniWrite, "Esc", %IniLocation%, StaticUserSettings, EscButton
+		IniWrite, "Numpad0", %IniLocation%, StaticUserSettings, ConfirmButton
+
+		IniWrite, "2", %IniLocation%, LastCraft, CraftTotal
+		IniWrite, "25", %IniLocation%, LastCraft, CraftTime
+		IniWrite, "Numpad1", %IniLocation%, LastCraft, CraftMacroButton
+		Return
+	}
