@@ -61,8 +61,9 @@ Scan:
 	Gui, Submit  ; Save the input from the user to each control's associated variable.
 	
 	; Variables
-	Delay = 450 ; in milliseconds, increase this number to go slower.
+	Delay = 500 ; in milliseconds, increase this number to go slower.
 	Looping = 0
+	Done = 0
 	Breakloop := false
 	
 	; Let user know the script is starting
@@ -107,6 +108,7 @@ Scan:
 	Sleep, Delay
 	
 	Looping++
+	Done++
 	
 	If (Looping = 100)
 		{
@@ -136,7 +138,7 @@ Scan:
 	Send, /
 	Sleep, Delay * .5
 	If (Breakloop)
-		Send, echo Scanning stopped by user. <se.11>
+		Send, echo Scanning stopped by user. %Done% of %Total% scanned.<se.11>
 	Else
 		Send, echo Scanning by AHK completed. <se.1>
 	Send, {enter}
