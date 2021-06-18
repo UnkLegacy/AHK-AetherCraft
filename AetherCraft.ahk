@@ -61,9 +61,10 @@ Scan:
 	Gui, Submit  ; Save the input from the user to each control's associated variable.
 	
 	; Variables
-	Delay = 400 ; in milliseconds, increase this number to go slower.
+	Delay = 450 ; in milliseconds, increase this number to go slower.
+	Looping = 0
 	Breakloop := false
-
+	
 	; Let user know the script is starting
 	WinActivate, %GameTitle%
 	Sleep, Delay
@@ -104,6 +105,29 @@ Scan:
 		Break
 	ControlSend, %AHKParent%, {%goDown%}, %Game% ; Go to Next Item
 	Sleep, Delay
+	
+	Looping++
+	
+	If (Looping = 100)
+		{
+		Looping = 0
+		If Breakloop
+		Break
+		ControlSend, %AHKParent%, {%goRight%}, %Game% ; Highlight Display next 100 results
+		Sleep, Delay
+		If Breakloop
+		Break
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Click next page
+		Sleep, Delay * 4 ; Wait a long time for the page to load
+		If Breakloop
+		Break
+		ControlSend, %AHKParent%, {%goDown%}, %Game% ; Go to top of window
+		Sleep, Delay
+		If Breakloop
+		Break
+		ControlSend, %AHKParent%, {%goDown%}, %Game% ; Go to Next Item
+		Sleep, Delay
+		}
 	}
 	
 	; Let user know the script is finished
