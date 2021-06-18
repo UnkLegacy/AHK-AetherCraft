@@ -21,17 +21,20 @@ VersionCheck:
 	;latest := RegExReplace(latest,"`n")
 	
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", %VersionURL%, true)
+	whr.Open("GET", VersionURL, true)
 	whr.Send()
 	; Using 'true' above and the call below allows the script to remain responsive.
 	whr.WaitForResponse()
-	latest := whr.ResponseText
 	
-	if (ErrorLevel = 1)
+	latest := RegExReplace(SubStr(whr.ResponseText, 1, 10),"`n")
+	latest := NumifyVersion(latest)
+	MsgBox, EL = %ErrorLevel%`nlatest = %latest%`nCurrentVersion = %CurrentVersion%
+	
+	if (ErrorLevel = 1 || !latest)
 	{
-		MsgBox Failed to retrieve latest version number from %VersionURL%. Please check your network connection and try again.
+		MsgBox Failed to retrieve latest version number from `n%VersionURL%`nPlease check your network connection and try again.
 		Return
-	} 
+	}
 	else
 	{
 		match := compareVersions(latest,CurrentVersion)
@@ -63,7 +66,7 @@ Update:
 	else 
 	{
 		MsgBox An error occurred during the update process. No update was performed.
-		ExitApp
+		Return
 	}
 	Return
 
@@ -95,4 +98,33 @@ compareVersions(remoteVersion,localVersion)
 	}
 	
 	Return match
+}
+
+NumifyVersion(version) {
+	StringSplit, MyVersion, version, `.`
+
+	Major := MyVersion1
+	Minor := MyVersion2
+	Fixlevel := MyVersion3
+	BugfixlevelFull := MyVersion4
+
+	Correction := 0
+	Bugfixlevel := BugfixlevelFull
+
+	if (RegExMatch(BugfixlevelFull, "i)RC")) {
+		Bugfixlevel := RegExReplace(BugfixlevelFull, "i)RC","")
+		Correction := -1
+	}
+	else if (RegExMatch(BugfixlevelFull, "i)BETA")) {
+		Bugfixlevel := RegExReplace(BugfixlevelFull, "i)BETA","")
+		Correction := -2
+	}
+	else if (RegExMatch(BugfixlevelFull, "i)ALPHA")) {
+		Bugfixlevel := RegExReplace(BugfixlevelFull, "i)ALPHA","")
+		Correction := -3
+	}
+
+	NumVersion := Major*1000000 + Minor*1000 + Fixlevel +Correction/10 + Bugfixlevel/10000
+	return NumVersion
+
 }

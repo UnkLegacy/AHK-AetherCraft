@@ -13,7 +13,7 @@ IniLocation = %A_ScriptDir%\AetherCraft.ini
 
 GoSub CreateIfNoExist
 
-;#include %A_ScriptDir%\AutoUpdate.ahk
+#include %A_ScriptDir%\AutoUpdate.ahk
 
 ; Table of Contents:
 ; 1. Ctrl+S or Ctrl+R - Reload Script.  Only works in NotePad++
@@ -274,7 +274,7 @@ CreateIfNoExist:
 	If VersionURL = "NoURL"
 	{
 		IniWrite, "https://github.com/UnkLegacy/AHK-AetherCraft/blob/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, "v2.3", %IniLocation%, ScriptOptions, Version
+		IniWrite, "2.3", %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/UnkLegacy/AHK-AetherCraft/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 	}
 	
