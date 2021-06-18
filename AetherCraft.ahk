@@ -132,13 +132,15 @@ Scan:
 		}
 	}
 	
+	Remaining := Total - Done
+	
 	; Let user know the script is finished
 	WinActivate, %GameTitle%
 	Sleep, Delay
 	Send, /
 	Sleep, Delay * .5
 	If (Breakloop)
-		Send, echo Scanning stopped by user. %Done% of %Total% scanned.<se.11>
+		Send, echo Scanning stopped by user. %Done% of %Total% scanned. %Remaining% remaining.<se.11>
 	Else
 		Send, echo Scanning by AHK completed. <se.1>
 	Send, {enter}
