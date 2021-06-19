@@ -11,6 +11,11 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 IniLocation = %A_ScriptDir%\AetherCraft.ini
 
+; These are to tell the AutoUpdater where the Script lives to update it.
+; These should not be your personal Github information (unless you forked the repo)
+GitHub_User := "UnkLegacy"
+GitHub_Repo := "AHK-AetherCraft"
+
 GoSub CreateIfNoExist
 
 #include %A_ScriptDir%\AutoUpdate.ahk
@@ -273,9 +278,9 @@ CreateIfNoExist:
 
 	If VersionURL = "NoURL"
 	{
-		IniWrite, "https://raw.githubusercontent.com/UnkLegacy/AHK-AetherCraft/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
+		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
 		IniWrite, "3.0.3", %IniLocation%, ScriptOptions, Version
-		IniWrite, "https://github.com/UnkLegacy/AHK-AetherCraft/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
+		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 	}
 	
 	If !(FileExist("Aethercraft.ini"))
