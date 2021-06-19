@@ -73,7 +73,7 @@ Update:
 		Dir := Dir.Pop()
 		
 		FileDelete %A_Temp%\%LatestVersion%.zip
-		FileRemoveDir, %a_scriptdir%\%Dir%-%CurrentVersion%
+		FileRemoveDir, %a_scriptdir%\%Dir%-%LatestVersion%
 		
 		IniWrite, %LatestVersion%, %IniLocation%, ScriptOptions, Version
 		
