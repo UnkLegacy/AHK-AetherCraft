@@ -27,12 +27,13 @@ VersionCheck:
 	whr.WaitForResponse()
 	
 	latest := RegExReplace(SubStr(whr.ResponseText, 1, 10),"`n")
+	Msgbox % latest
 	latest := NumifyVersion(latest)
 	MsgBox, EL = %ErrorLevel%`nlatest = %latest%`nCurrentVersion = %CurrentVersion%
 	
 	if (ErrorLevel = 1 || !latest)
 	{
-		MsgBox Failed to retrieve latest version number from `n%VersionURL%`nPlease check your network connection and try again.
+		MsgBox, Failed to retrieve latest version number from `n%VersionURL%`nPlease check your network connection and try again.
 		Return
 	}
 	else
@@ -40,7 +41,7 @@ VersionCheck:
 		match := compareVersions(latest,CurrentVersion)
 		if (match != 0)
 		{
-			MsgBox A newer version of this script is available. After clicking OK, your script will be updated and relaunched.
+			MsgBox, A newer version of this script is available. After clicking OK, your script will be updated and relaunched.
 			GoSub Update
 		}
 		Return
