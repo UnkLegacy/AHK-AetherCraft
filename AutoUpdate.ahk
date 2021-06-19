@@ -5,6 +5,16 @@
 ; download the new AHK file, replace this one with the new version, and then 
 ; relaunch this script.
 
+RunWait, 7z.exe,, Hide UseErrorLevel
+
+if (ErrorLevel = 0)
+	GoSub VersionCheck
+else
+	MsgBox, 7-zip not installed.  Automatic version update failed.
+	
+Return
+	
+
 VersionCheck:
 	; Get update url and current version
 	IniRead VersionURL,%IniLocation%,ScriptOptions,UpdateURL
@@ -12,14 +22,10 @@ VersionCheck:
 	
 	if (VersionURL = "ERROR" || CurrentVersion = "ERROR")
 	{
-		MsgBox "Unable to read initialization settings. No version check performed."
+		MsgBox, "Unable to read initialization settings. No version check performed."
 	}
 	
 	; Get the latest version num from the server
-	;URLDownloadToFile %VersionURL%, latestversion.txt
-	;FileRead latest, latestversion.txt
-	;latest := RegExReplace(latest,"`n")
-	
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 	whr.Open("GET", VersionURL, true)
 	whr.Send()
@@ -63,7 +69,12 @@ Update:
 	
 	if (ErrorLevel = 0)
 	{
+		Dir := StrSplit(a_scriptdir, "\")
+		Dir := Dir.Pop()
+		
 		FileDelete %A_Temp%\%LatestVersion%.zip
+		FileRemoveDir, %a_scriptdir%\%Dir%-%CurrentVersion%
+		
 		IniWrite, %LatestVersion%, %IniLocation%, ScriptOptions, Version
 		
 		MsgBox, Aethercraft.ahk has been updated.  It will now reload to the latest version.
