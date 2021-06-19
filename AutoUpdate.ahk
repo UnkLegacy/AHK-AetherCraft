@@ -26,19 +26,17 @@ VersionCheck:
 	; Using 'true' above and the call below allows the script to remain responsive.
 	whr.WaitForResponse()
 	
-	latest := RegExReplace(SubStr(whr.ResponseText, 1, 10),"`n")
-	Msgbox % latest
-	latest := NumifyVersion(latest)
-	MsgBox, EL = %ErrorLevel%`nlatest = %latest%`nCurrentVersion = %CurrentVersion%
+	LatestVersion := RegExReplace(SubStr(whr.ResponseText, 1, 10),"`n")
 	
-	if (ErrorLevel = 1 || !latest)
+	if (ErrorLevel = 1 || !LatestVersion)
 	{
 		MsgBox, Failed to retrieve latest version number from `n%VersionURL%`nPlease check your network connection and try again.
 		Return
 	}
 	else
 	{
-		match := compareVersions(latest,CurrentVersion)
+		match := compareVersions(LatestVersion,CurrentVersion)
+
 		if (match != 0)
 		{
 			MsgBox, A newer version of this script is available. After clicking OK, your script will be updated and relaunched.
@@ -49,19 +47,20 @@ VersionCheck:
 	Return
 
 ; We're here, so it must have been determined that a newer version exists.
-; Download the latest.zip file, unzip it and overwrite any existing files.
+; Download the LatestVersion.zip file, unzip it and overwrite any existing files.
 Update:	
-	; Download the latest zip file
+	; Download the LatestVersion zip file
 	IniRead PackageURL,%IniLocation%,ScriptOptions,PackageURL
-	URLDownloadToFile %PackageURL%, %A_Temp%\%CurrentVersion%.zip
+	URLDownloadToFile %PackageURL%, %A_Temp%\%LatestVersion%.zip
 	
 	; 7z command
-	CMD = e -y -o%A_ScriptDir% %A_Temp%\%CurrentVersion%.zip
+	CMD = e -y -o%A_ScriptDir% %A_Temp%\%LatestVersion%.zip
 	
 	RunWait 7z.exe %CMD%,, Hide UseErrorLevel
+	
 	if (ErrorLevel = 0)
 	{
-		FileDelete %A_Temp%\%CurrentVersion%.zip
+		FileDelete %A_Temp%\%LatestVersion%.zip
 		Reload
 	} 
 	else 
@@ -84,48 +83,18 @@ Update:
 ;				remote version numbers
 compareVersions(remoteVersion,localVersion)
 {
-	StringSplit remoteArray, remoteVersion, "."
-	StringSplit localArray, localVersion, "."
+	remoteArray := StrSplit(remoteVersion, ".")
+	localArray := StrSplit(localVersion, ".")	
 	match = 0
 	
-	Loop %remoteArray0%
+	Loop % remoteArray.Length()
 	{
-		this_r := remoteArray%A_Index%
-		this_l := localArray%A_Index%
+		this_r := remoteArray[A_Index]
+		this_l := localArray[A_Index]
+		
 		if (this_r > this_l)
-		{
 			++match
-		}
 	}
 	
 	Return match
-}
-
-NumifyVersion(version) {
-	StringSplit, MyVersion, version, `.`
-
-	Major := MyVersion1
-	Minor := MyVersion2
-	Fixlevel := MyVersion3
-	BugfixlevelFull := MyVersion4
-
-	Correction := 0
-	Bugfixlevel := BugfixlevelFull
-
-	if (RegExMatch(BugfixlevelFull, "i)RC")) {
-		Bugfixlevel := RegExReplace(BugfixlevelFull, "i)RC","")
-		Correction := -1
-	}
-	else if (RegExMatch(BugfixlevelFull, "i)BETA")) {
-		Bugfixlevel := RegExReplace(BugfixlevelFull, "i)BETA","")
-		Correction := -2
-	}
-	else if (RegExMatch(BugfixlevelFull, "i)ALPHA")) {
-		Bugfixlevel := RegExReplace(BugfixlevelFull, "i)ALPHA","")
-		Correction := -3
-	}
-
-	NumVersion := Major*1000000 + Minor*1000 + Fixlevel +Correction/10 + Bugfixlevel/10000
-	return NumVersion
-
 }
