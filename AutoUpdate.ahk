@@ -51,7 +51,7 @@ VersionCheck:
 Update:	
 	; Download the LatestVersion zip file
 	IniRead PackageURL,%IniLocation%,ScriptOptions,PackageURL
-	URLDownloadToFile %PackageURL%, %A_Temp%\%LatestVersion%.zip
+	URLDownloadToFile %PackageURL%%LatestVersion%.zip, %A_Temp%\%LatestVersion%.zip
 	
 	; 7z command
 	CMD = e -y -o%A_ScriptDir% %A_Temp%\%LatestVersion%.zip
@@ -61,6 +61,7 @@ Update:
 	if (ErrorLevel = 0)
 	{
 		FileDelete %A_Temp%\%LatestVersion%.zip
+		IniWrite, %LatestVersion%, %IniLocation%, ScriptOptions, Version
 		Reload
 	} 
 	else 
