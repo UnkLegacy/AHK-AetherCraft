@@ -13,6 +13,8 @@ IniLocation = %A_ScriptDir%\AetherCraft.ini
 
 GoSub CreateIfNoExist
 
+#include %A_ScriptDir%\AutoUpdate.ahk
+
 ; Table of Contents:
 ; 1. Ctrl+S or Ctrl+R - Reload Script.  Only works in NotePad++
 ; 2. Ctrl+H - Shows the ReadMe file.
@@ -267,6 +269,15 @@ ReadIni:
 	Return
 	
 CreateIfNoExist:
+	IniRead, VersionURL, %IniLocation%, ScriptOptions, UpdateURL, "NoURL"
+
+	If VersionURL = "NoURL"
+	{
+		IniWrite, "https://raw.githubusercontent.com/UnkLegacy/AHK-AetherCraft/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
+		IniWrite, "3.0.0", %IniLocation%, ScriptOptions, Version
+		IniWrite, "https://github.com/UnkLegacy/AHK-AetherCraft/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
+	}
+	
 	If !(FileExist("Aethercraft.ini"))
 	{
 		IniWrite, "ahk_parent", %IniLocation%, GameLocation, AHKParent
@@ -282,5 +293,5 @@ CreateIfNoExist:
 		IniWrite, "2", %IniLocation%, LastCraft, CraftTotal
 		IniWrite, "25", %IniLocation%, LastCraft, CraftTime
 		IniWrite, "Numpad1", %IniLocation%, LastCraft, CraftMacroButton
-		Return
 	}
+	Return
