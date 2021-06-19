@@ -39,8 +39,11 @@ VersionCheck:
 
 		if (match != 0)
 		{
-			MsgBox, A newer version of this script is available. After clicking OK, your script will be updated and relaunched.
-			GoSub Update
+			MsgBox, 52, , A newer version of this script is available. Do you want to Update and Reload the script?
+			IfMsgBox Yes
+				GoSub Update
+			else
+				Return
 		}
 		Return
 	}
@@ -62,6 +65,9 @@ Update:
 	{
 		FileDelete %A_Temp%\%LatestVersion%.zip
 		IniWrite, %LatestVersion%, %IniLocation%, ScriptOptions, Version
+		
+		MsgBox, Aethercraft.ahk has been updated.  It will now reload to the latest version.
+		
 		Reload
 	} 
 	else 

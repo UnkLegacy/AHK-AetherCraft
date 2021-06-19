@@ -274,7 +274,7 @@ CreateIfNoExist:
 	If VersionURL = "NoURL"
 	{
 		IniWrite, "https://raw.githubusercontent.com/UnkLegacy/AHK-AetherCraft/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, "3.0.1", %IniLocation%, ScriptOptions, Version
+		IniWrite, "3.0.2", %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/UnkLegacy/AHK-AetherCraft/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 	}
 	
