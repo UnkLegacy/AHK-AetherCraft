@@ -21,6 +21,7 @@ A collection of AHK scripts for use for the Jenova Free Company, Aether Craft
 - Total Items - Enter in the Total Number of items in the Market Board Window.  Leave blank for all 100 items.
 
 ### How to use Crafting GUI
+- Note: Ensure the Hand is showing on the item you want to craft, NOT the synthesize button.
 - Total Crafts - Enter in the number of crafts you would like to make.
 - Macro Duration - Enter the duration of the macro (in seconds).  Find this information on FF14 Teamcraft.
 - Macro Button - Enter the key where the macro you wish to run resides.  Eg. Numpad5  *** Warning: Do not use Key Combinations, such as Ctrl + 1 ***

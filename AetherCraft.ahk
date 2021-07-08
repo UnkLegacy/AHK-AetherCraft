@@ -294,14 +294,7 @@ ReadIni:
 CreateIfNoExist:
 	IniRead, VersionURL, %IniLocation%, ScriptOptions, UpdateURL, "NoURL"
 
-	If VersionURL = "NoURL"
-	{
-		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, "3.1.0", %IniLocation%, ScriptOptions, Version
-		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
-	}
-	
-	If !(FileExist("Aethercraft.ini"))
+	If !FileExist("AetherCraft.ini")
 	{
 		IniWrite, "ahk_parent", %IniLocation%, GameLocation, AHKParent
 		IniWrite, "ahk_exe ffxiv_dx11.exe", %IniLocation%, GameLocation, Game
@@ -317,4 +310,12 @@ CreateIfNoExist:
 		IniWrite, "25", %IniLocation%, LastCraft, CraftTime
 		IniWrite, "Numpad1", %IniLocation%, LastCraft, CraftMacroButton
 	}
+	
+	If VersionURL = "NoURL"
+	{
+		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
+		IniWrite, "3.1.0", %IniLocation%, ScriptOptions, Version
+		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
+	}
+	
 	Return
