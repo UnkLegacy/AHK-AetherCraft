@@ -314,7 +314,7 @@ CreateIfNoExist:
 	If VersionURL = "NoURL"
 	{
 		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, "3.1.0", %IniLocation%, ScriptOptions, Version
+		IniWrite, "3.1.1", %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 	}
 	
