@@ -184,15 +184,19 @@ Craft:
 		IniWrite, "%MacroButton%", %IniLocation%, LastCraft, CraftMacroButton
 	
 	; Variables
-	SleepTime := (Time * 1000)
+	SleepTime := (Time * 1000) + 1000 ; Add 1 second to macro time
 	Delay = 1500 ; in milliseconds, increase this number to go slower.
+	quickDelay = .3 ; Quick delay for text inputs
+	fastDelay = .75 ; Fast delay for multiple crafts
+	slowDelay = 2 ; Slow delay for sitting down animation
 	Breakloop := false
+	Done = 0
 	
 	; Let user know the script is starting
 	WinActivate, %GameTitle%
 	Sleep, Delay
 	Send, /
-	Sleep, Delay * .5
+	Sleep, Delay * quickDelay
 	Send, echo Crafting by AHK started. <se.13> {enter}
 	Sleep, Delay
 	
@@ -201,12 +205,16 @@ Craft:
 	; Check for user to break
 	If Breakloop
 		Break
-	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Summon the hand
-	Sleep, Delay
 	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select the recipe
 	Sleep, Delay
+	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit Synthesize
+	Sleep, Delay
 	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Starts crafting
-	Sleep, Delay*2 ; Wait for us to sit down
+	
+	if (A_Index = 1)
+		Sleep, Delay * slowDelay ; Wait for us to sit down
+	else
+		Sleep, Delay * fastDelay ; or dont
 	
 	If Breakloop
 		Break
@@ -214,16 +222,26 @@ Craft:
 	If Breakloop
 		Break
 		
-	Sleep, %SleepTime% ; Wait for crafting macro to finish
+	Done++ ; +1 item done, yay
+	
+	If (Total = A_Index)
+		Sleep, SleepTime - 3000 ; No need to wait if this is the last item we're crafting.
+	else
+		Sleep, SleepTime ; Wait for crafting macro to finish
 	}
 	
 	; Let user know the script is finished
 	WinActivate, %GameTitle%
 	Sleep, Delay
 	Send, /
-	Sleep, Delay * .5
+	Sleep, Delay * quickDelay
 	If (Breakloop)
-		Send, echo Crafting stopped by user. <se.11>
+		{
+		Send, echo Crafting stopped by user. %Done% of %Total% complete. <se.11>
+		Sleep, Delay * quickenDelay
+		Total := Total - Done
+		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal ; Update amount to craft to what was left when interrupted
+		}
 	Else
 		Send, echo Crafting by AHK completed. <se.1>
 	Send, {enter}
@@ -279,7 +297,7 @@ CreateIfNoExist:
 	If VersionURL = "NoURL"
 	{
 		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, "3.0.4", %IniLocation%, ScriptOptions, Version
+		IniWrite, "3.1.0", %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 	}
 	
