@@ -189,6 +189,12 @@ Craft:
 	quickDelay = .3 ; Quick delay for text inputs
 	fastDelay = .75 ; Fast delay for multiple crafts
 	slowDelay = 2 ; Slow delay for sitting down animation
+	
+	; Estimate Completion Time
+	totalDelayTime := (Delay * 5) + (Delay * quickDelay * 2) + (Delay * slowDelay) + (Delay * fastDelay * (Total-1))
+	totalCraftTimeMinutes := Floor((totalDelayTime / 1000) / 60)
+	totalCraftTimeSeconds := Round(Mod((totalDelayTime / 1000),60))
+	
 	Breakloop := false
 	Done = 0
 	
@@ -197,7 +203,7 @@ Craft:
 	Sleep, Delay
 	Send, /
 	Sleep, Delay * quickDelay
-	Send, echo Crafting by AHK started. <se.13> {enter}
+	Send, echo Crafting by AHK started. Complete ETA: %totalCraftTimeMinutes%m %totalCraftTimeSeconds%s <se.13>{enter}
 	Sleep, Delay
 	
 	Loop, %Total%
@@ -237,14 +243,13 @@ Craft:
 	Sleep, Delay * quickDelay
 	If (Breakloop)
 		{
-		Send, echo Crafting stopped by user. %Done% of %Total% complete. <se.11>
+		Send, echo Crafting stopped by user. %Done% of %Total% complete. <se.11>{enter}
 		Sleep, Delay * quickenDelay
 		Total := Total - Done
 		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal ; Update amount to craft to what was left when interrupted
 		}
 	Else
-		Send, echo Crafting by AHK completed. <se.1>
-	Send, {enter}
+		Send, echo Crafting by AHK completed. <se.1>{enter}
 	
 Gui, Destroy
 Return
@@ -314,7 +319,7 @@ CreateIfNoExist:
 	If VersionURL = "NoURL"
 	{
 		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, "3.1.1", %IniLocation%, ScriptOptions, Version
+		IniWrite, "3.1.2", %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 	}
 	
