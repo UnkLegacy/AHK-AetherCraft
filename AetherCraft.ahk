@@ -191,7 +191,7 @@ Craft:
 	slowDelay = 2 ; Slow delay for sitting down animation
 	
 	; Estimate Completion Time
-	totalDelayTime := (Delay * 5) + (Delay * quickDelay * 2) + (Delay * slowDelay) + (Delay * fastDelay * (Total-1))
+	totalDelayTime := (Delay * 5) + (Delay * quickDelay * 2) + (Delay * slowDelay) + (Delay * fastDelay * (Total-1)) + (SleepTime * (Total-1))
 	totalCraftTimeMinutes := Floor((totalDelayTime / 1000) / 60)
 	totalCraftTimeSeconds := Round(Mod((totalDelayTime / 1000),60))
 	
@@ -319,7 +319,7 @@ CreateIfNoExist:
 	If VersionURL = "NoURL"
 	{
 		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, "3.1.2", %IniLocation%, ScriptOptions, Version
+		IniWrite, "3.1.3", %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 	}
 	
