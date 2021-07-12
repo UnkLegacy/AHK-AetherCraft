@@ -185,15 +185,12 @@ Craft:
 	
 	; Variables
 	SleepTime := (Time * 1000) + 1000 ; Add 1 second to macro time
-	Delay = 1500 ; in milliseconds, increase this number to go slower.
-	quickDelay = .3 ; Quick delay for text inputs
-	fastDelay = .75 ; Fast delay for multiple crafts
-	slowDelay = 2 ; Slow delay for sitting down animation
 	
 	; Estimate Completion Time
-	totalDelayTime := (Delay * 5) + (Delay * quickDelay * 2) + (Delay * slowDelay) + (Delay * fastDelay * (Total-1)) + (SleepTime * Total)
-	totalCraftTimeMinutes := Floor((totalDelayTime / 1000) / 60)
-	totalCraftTimeSeconds := Round(Mod((totalDelayTime / 1000),60))
+	totalDelayTime := (Delay * 2) + SleepTime + (Delay * fastDelay) ;// Total time for 1 loop of not first or last item
+	totalTime := (totalDelayTime * (Total - 1)) + (Delay * slowDelay) + (SleepTime - 3000) ;// Add first craft slowness and last craft fastness
+	totalCraftTimeMinutes := Floor((totalTime / 1000) / 60)
+	totalCraftTimeSeconds := Round(Mod((totalTime / 1000),60))
 	
 	Breakloop := false
 	Done = 0
@@ -290,14 +287,21 @@ ReadIni:
 	IniRead, goDown, %IniLocation%, StaticUserSettings, DownButton
 	IniRead, goEsc, %IniLocation%, StaticUserSettings, EscButton
 	IniRead, Confirm, %IniLocation%, StaticUserSettings, ConfirmButton
-
+	
 	IniRead, craftTotal, %IniLocation%, LastCraft, CraftTotal
 	IniRead, craftTime, %IniLocation%, LastCraft, CraftTime
 	IniRead, craftButton, %IniLocation%, LastCraft, CraftMacroButton
+	
+	IniRead, Delay, %IniLocation%, DelaySettings, Delay
+	IniRead, quickDelay, %IniLocation%, DelaySettings, TextInputDelay
+	IniRead, fastDelay, %IniLocation%, DelaySettings, MultiCraftDelay
+	IniRead, slowDelay, %IniLocation%, DelaySettings, SitDownDelay
+	
 	Return
 	
 CreateIfNoExist:
 	IniRead, VersionURL, %IniLocation%, ScriptOptions, UpdateURL, "NoURL"
+	IniRead, Delay, %IniLocation%, DelaySettings, Delay, "NoDelay"
 
 	If !FileExist("AetherCraft.ini")
 	{
@@ -319,8 +323,15 @@ CreateIfNoExist:
 	If VersionURL = "NoURL"
 	{
 		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, "3.1.4", %IniLocation%, ScriptOptions, Version
+		IniWrite, 3.2.0, %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 	}
 	
+	If Delay = "NoDelay"
+	{
+		IniWrite, "1500", %IniLocation%, DelaySettings, Delay
+		IniWrite, ".3", %IniLocation%, DelaySettings, TextInputDelay
+		IniWrite, ".75", %IniLocation%, DelaySettings, MultiCraftDelay
+		IniWrite, "2", %IniLocation%, DelaySettings, SitDownDelay
+	}
 	Return
