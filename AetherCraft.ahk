@@ -24,8 +24,8 @@ if AutoUpdate
 	}
 
 ; Table of Contents:
-; 1. Ctrl+S or Ctrl+R - Reload Script.  Only works in NotePad++
-; 2. Ctrl+H - Shows the ReadMe file.
+; 1. Ctrl + S or Ctrl + R - Reload Script.  Only works in NotePad++.
+; 2. Ctrl + Alt + H - Shows the ReadMe file.
 ; 3. F6  - Scan Market Board.  Ensure the Hand is showing on the first item before hitting F6.
 ; 3. F10 - Launch Craft GUI.
 ; 4. F12 - Stop Any Script.
@@ -328,7 +328,7 @@ CreateIfNoExist:
 	If VersionURL = "NoURL"
 	{
 		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
-		IniWrite, 3.2.0, %IniLocation%, ScriptOptions, Version
+		IniWrite, 3.2.1, %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
 		IniWrite, 1, %IniLocation%, ScriptOptions, AutoUpdate
 	}

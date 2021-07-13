@@ -35,3 +35,4 @@ A collection of AHK scripts for use for the Jenova Free Company, Aether Craft
 ## General Macros
 - `Ctrl + S` - Saves (S only) and Reloads the Script.  Only works in NotePad++.
 - `Ctrl + R` - Reloads the Script.  Only works in NotePad++.
+- `Ctrl + Alt + H` - Displays this ReadMe file.
