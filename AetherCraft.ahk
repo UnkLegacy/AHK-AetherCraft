@@ -18,7 +18,10 @@ GitHub_Repo := "AHK-AetherCraft"
 
 GoSub CreateIfNoExist
 
-#include %A_ScriptDir%\AutoUpdate.ahk
+if AutoUpdate
+	{
+	#include %A_ScriptDir%\AutoUpdate.ahk
+	}
 
 ; Table of Contents:
 ; 1. Ctrl+S or Ctrl+R - Reload Script.  Only works in NotePad++
@@ -302,11 +305,13 @@ ReadIni:
 CreateIfNoExist:
 	IniRead, VersionURL, %IniLocation%, ScriptOptions, UpdateURL, "NoURL"
 	IniRead, Delay, %IniLocation%, DelaySettings, Delay, "NoDelay"
+	IniRead, AutoUpdate, %IniLocation%, ScriptOptions, AutoUpdate, 1
 
 	If !FileExist("AetherCraft.ini")
 	{
 		IniWrite, "ahk_parent", %IniLocation%, GameLocation, AHKParent
 		IniWrite, "ahk_exe ffxiv_dx11.exe", %IniLocation%, GameLocation, Game
+		; IniWrite, "ahk_class FFXIVGAME", %IniLocation%, GameLocation, Game
 		IniWrite, "FINAL FANTASY XIV", %IniLocation%, GameLocation, GameTitle
 
 		IniWrite, "Up", %IniLocation%, StaticUserSettings, UpButton
@@ -325,6 +330,7 @@ CreateIfNoExist:
 		IniWrite, "https://raw.githubusercontent.com/%GitHub_User%/%GitHub_Repo%/master/latestversion.txt", %IniLocation%, ScriptOptions, UpdateURL
 		IniWrite, 3.2.0, %IniLocation%, ScriptOptions, Version
 		IniWrite, "https://github.com/%GitHub_User%/%GitHub_Repo%/archive/refs/tags/", %IniLocation%, ScriptOptions, PackageURL
+		IniWrite, 1, %IniLocation%, ScriptOptions, AutoUpdate
 	}
 	
 	If Delay = "NoDelay"

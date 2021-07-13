@@ -5,6 +5,7 @@ A collection of AHK scripts for use for the Jenova Free Company, Aether Craft
 - 7-zip is required for Auto Update functionality.  It is a free download that you can get from here: https://www.7-zip.org/
 	- Ensure that you add 7z to the Windows PATH variable.
 	- You can check if this is installed correctly by typing "7z" (without quotes) at the command prompt.
+	- You can turn this check off if you set AutoUpdate=0 under [ScriptOptions]
 
 ## AetherCraft.ini Setup
 - Do NOT change anything under the [GameLocation] section unless you know what to put here.

@@ -27,7 +27,11 @@ RunWait, 7z.exe,, Hide UseErrorLevel
 if (ErrorLevel = 0)
 	GoSub VersionCheck
 else
-	MsgBox, 7-zip not installed.  Automatic version update failed.
+	{
+	MsgBox, 4, Error, 7-zip not installed.  Automatic version update failed.  Do you want to disable Automatic Update?
+	IfMsgBox Yes
+		IniWrite, 0, %IniLocation%, ScriptOptions, AutoUpdate
+	}
 	
 Return
 	
