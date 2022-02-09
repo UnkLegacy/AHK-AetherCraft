@@ -145,15 +145,10 @@ Scan:
 	Remaining := Total - Done
 	
 	; Let user know the script is finished
-	WinActivate, %GameTitle%
-	Sleep, Delay
-	Send, /
-	Sleep, Delay * .5
 	If (Breakloop)
-		Send, echo Scanning stopped by user. %Done% of %Total% scanned. %Remaining% remaining.<se.11>
+		MsgBox, Scanning stopped by user. %Done% of %Total% scanned. %Remaining% remaining.
 	Else
-		Send, echo Scanning by AHK completed. <se.1>
-	Send, {enter}
+		MsgBox, Scanning by AHK completed.
 	
 Gui, Destroy
 Return
@@ -163,13 +158,14 @@ Return
 f10::
 ; F10 - Auto Craft
 GoSub ReadIni
-Gui, Add, Text,, Total Crafts:	; Label for total crafts
+Gui, Add, Text,, Total Crafts or QS Loops:	; Label for total crafts
 Gui, Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
 Gui, Add, Text,, Macro button (eg, Numpad1):  ; Label for which button the crafting macro resides on
 Gui, Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
 Gui, Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
 Gui, Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
-Gui, Add, Button, gCraft, &Craft ; The function Craft will be run when the Craft button is pressed.
+Gui, Add, Button, Default xs section gCraft, &Craft ; The function Craft will be run when the Craft button is pressed.
+Gui, Add, Button, gQuickSynth ys xs+50, &QuickSynth ; The function Craft will be run when the Craft button is pressed.
 Gui, Show,, Macro Settings
 Return
 
@@ -208,48 +204,132 @@ Craft:
 	
 	Loop, %Total%
 	{
-	; Check for user to break
-	If Breakloop
-		Break
-	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select the recipe
-	Sleep, Delay
-	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit Synthesize
-	Sleep, Delay
-	ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Starts crafting
-	
-	if (A_Index = 1)
-		Sleep, Delay * slowDelay ; Wait for us to sit down
-	else
-		Sleep, Delay * fastDelay ; or dont
-	
-	If Breakloop
-		Break
-	ControlSend, %AHKParent%, {%MacroButton%}, %Game% ; Hit your crafting macro button
-	If Breakloop
-		Break
+		; Check for user to break
+		If Breakloop
+			Break
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select the recipe
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit Synthesize
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Starts crafting
 		
-	Done++ ; +1 item done, yay
-	
-	If (Total = A_Index)
-		Sleep, SleepTime - 3000 ; No need to wait if this is the last item we're crafting.
-	else
-		Sleep, SleepTime ; Wait for crafting macro to finish
+		if (A_Index = 1)
+			Sleep, Delay * slowDelay ; Wait for us to sit down
+		else
+			Sleep, Delay * fastDelay ; or dont
+		
+		If Breakloop
+			Break
+		ControlSend, %AHKParent%, {%MacroButton%}, %Game% ; Hit your crafting macro button
+		If Breakloop
+			Break
+			
+		Done++ ; +1 item done, yay
+		
+		If (Total = A_Index)
+			Sleep, SleepTime - 3000 ; No need to wait if this is the last item we're crafting.
+		else
+			Sleep, SleepTime ; Wait for crafting macro to finish
 	}
-	
-	; Let user know the script is finished
-	WinActivate, %GameTitle%
-	Sleep, Delay
-	Send, /
-	Sleep, Delay * quickDelay
+
 	If (Breakloop)
 		{
-		Send, echo Crafting stopped by user. %Done% of %Total% complete. <se.11>{enter}
-		Sleep, Delay * quickenDelay
+		MsgBox, Crafting stopped by user. %Done% of %Total% complete.
 		Total := Total - Done
 		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal ; Update amount to craft to what was left when interrupted
 		}
 	Else
-		Send, echo Crafting by AHK completed. <se.1>{enter}
+		MsgBox, Crafting by AHK completed.
+	
+Gui, Destroy
+Return
+
+; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+QuickSynth:
+	Gui, Submit  ; Save the input from the user to each control's associated variable.
+
+	; Write user settings back to ini file.  Only if they changed.
+	If (Total != craftTotal)
+		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal
+	
+	; Variables
+	; Just kind of guessing here.  Takes about 3 seconds, but we'd rather end late than end too early.
+	Time := (3.33 * 1000) ; Time it takes to quickSynth 1 item.  Seconds is first number.
+	totalTime := (Time * 99) + 0 ; Time it takes to quickSynth 99 items. ~5.5 min.
+	
+	; Estimate Completion Time
+	totalCraftTimeMinutes := Floor((totalTime / 1000) / 60)
+	totalCraftTimeSeconds := Round(Mod((totalTime / 1000),60))
+	
+	Breakloop := false
+	Done = 0
+	
+	; Let user know the script is starting
+	WinActivate, %GameTitle%
+	Sleep, Delay
+	Send, /
+	Sleep, Delay * quickDelay
+	Send, echo QuickSynth by AHK started. Complete ETA: %totalCraftTimeMinutes%m %totalCraftTimeSeconds%s <se.13>{enter}
+	Sleep, Delay
+	
+	Loop, %Total%
+	{
+		; Check for user to break
+		If Breakloop
+			Break
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select the recipe
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%goLeft%}, %Game% ; Move cursor to Quick Synth
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit Quick Synthesis
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select Attempts
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%goDown%}, %Game% ; Hit Down to make 99 items
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Confirm 99
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%goDown%}, %Game% ; Move cursor to Synthesize
+		Sleep, Delay
+		
+		If Breakloop ; Last chance to cancel before we begin.
+			Break
+		
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit Synthesize, this starts crafting.
+		Sleep, Delay
+		
+		if (A_Index = 1)
+			Sleep, Delay * slowDelay ; Wait for us to sit down
+		else
+			Sleep, Delay * fastDelay ; or dont
+		
+		If Breakloop
+			Break
+			
+		Loop, 99 ; QuickSynth 99 items.
+		{
+			Sleep, Time ; Wait for 1 item to be crafted.  Then check if user wants to quit.
+			
+			If Breakloop
+				Break
+		} ; End Loop, 99
+		
+		Done++ ; 1 QuickSynth loop done, yay
+		
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit End Synthesis
+		Sleep, Delay
+	
+	} ; End Loop, %Total%
+	
+	If (Breakloop)
+		{
+		MsgBox, QuickSynth stopped by user. %Done% of %Total% complete.
+		Total := Total - Done
+		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal ; Update amount to craft to what was left when interrupted
+		}
+	Else
+		MsgBox, QuickSynth by AHK completed.
 	
 Gui, Destroy
 Return
@@ -258,9 +338,8 @@ Return
 
 f12::
 ; F12 - Breaks the automation loops
-Breakloop := true
-TrayTip,, Stopping... Please wait. ,, 18
-Return
+	Breakloop := true
+	Return
 
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -287,6 +366,7 @@ ReadIni:
 
 	IniRead, goUp, %IniLocation%, StaticUserSettings, UpButton
 	IniRead, goRight, %IniLocation%, StaticUserSettings, RightButton
+	IniRead, goLeft, %IniLocation%, StaticUserSettings, LeftButton
 	IniRead, goDown, %IniLocation%, StaticUserSettings, DownButton
 	IniRead, goEsc, %IniLocation%, StaticUserSettings, EscButton
 	IniRead, Confirm, %IniLocation%, StaticUserSettings, ConfirmButton
@@ -305,6 +385,7 @@ ReadIni:
 CreateIfNoExist:
 	IniRead, VersionURL, %IniLocation%, ScriptOptions, UpdateURL, "NoURL"
 	IniRead, Delay, %IniLocation%, DelaySettings, Delay, "NoDelay"
+	IniRead, goLeft, %IniLocation%, StaticUserSettings, LeftButton, "NoLeft"
 	IniRead, AutoUpdate, %IniLocation%, ScriptOptions, AutoUpdate, 1
 
 	If !FileExist("AetherCraft.ini")
@@ -316,6 +397,7 @@ CreateIfNoExist:
 
 		IniWrite, "Up", %IniLocation%, StaticUserSettings, UpButton
 		IniWrite, "Right", %IniLocation%, StaticUserSettings, RightButton
+		IniWrite, "Left", %IniLocation%, StaticUserSettings, LeftButton
 		IniWrite, "Down", %IniLocation%, StaticUserSettings, DownButton
 		IniWrite, "Esc", %IniLocation%, StaticUserSettings, EscButton
 		IniWrite, "Numpad0", %IniLocation%, StaticUserSettings, ConfirmButton
@@ -340,4 +422,10 @@ CreateIfNoExist:
 		IniWrite, ".75", %IniLocation%, DelaySettings, MultiCraftDelay
 		IniWrite, "2", %IniLocation%, DelaySettings, SitDownDelay
 	}
+	
+	If goLeft = "NoLeft"
+	{
+	IniWrite, "Left", %IniLocation%, StaticUserSettings, LeftButton
+	}
+	
 	Return
