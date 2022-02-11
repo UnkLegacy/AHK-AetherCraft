@@ -255,8 +255,9 @@ QuickSynth:
 	
 	; Variables
 	; Just kind of guessing here.  Takes about 3 seconds, but we'd rather end late than end too early.
-	Time := (3.33 * 1000) ; Time it takes to quickSynth 1 item.  Seconds is first number.
-	totalTime := (Time * 99) + 0 ; Time it takes to quickSynth 99 items. ~5.5 min.
+	Time := (3.20 * 1000) ; Time it takes to quickSynth 1 item.  Seconds is first number.
+	totalTime := (Time * 99) + 0 ; Time it takes to quickSynth 99 items. ~5.25 min.
+	totalTime := (totalTime * Total)
 	
 	; Estimate Completion Time
 	totalCraftTimeMinutes := Floor((totalTime / 1000) / 60)
@@ -280,16 +281,24 @@ QuickSynth:
 			Break
 		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select the recipe
 		Sleep, Delay
+		If Breakloop
+			Break
 		ControlSend, %AHKParent%, {%goLeft%}, %Game% ; Move cursor to Quick Synth
 		Sleep, Delay
 		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit Quick Synthesis
 		Sleep, Delay
+		If Breakloop
+			Break
 		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select Attempts
 		Sleep, Delay
+		If Breakloop
+			Break
 		ControlSend, %AHKParent%, {%goDown%}, %Game% ; Hit Down to make 99 items
 		Sleep, Delay
 		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Confirm 99
 		Sleep, Delay
+		If Breakloop
+			Break
 		ControlSend, %AHKParent%, {%goDown%}, %Game% ; Move cursor to Synthesize
 		Sleep, Delay
 		
