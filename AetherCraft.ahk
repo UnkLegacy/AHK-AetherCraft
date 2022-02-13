@@ -181,6 +181,7 @@ Craft:
 	
 	Gui,1:Hide
 	Gui,2:Show,, Crafting Progress
+	Gui,2:+AlwaysOnTop
 	
 	; Write user settings back to ini file.  Only if they changed.
 	If (Total != craftTotal)
@@ -234,14 +235,14 @@ Craft:
 		ControlSend, %AHKParent%, {%MacroButton%}, %Game% ; Hit your crafting macro button
 		If Breakloop
 			Break
-			
-		Done++ ; +1 item done, yay
-		GuiControl,2: ,Done, % Done ; Update the progress bar
 		
 		If (Total = A_Index)
 			Sleep, SleepTime - 3000 ; No need to wait if this is the last item we're crafting.
 		else
 			Sleep, SleepTime ; Wait for crafting macro to finish
+			
+		Done++ ; +1 item done, yay
+		GuiControl,2: ,Done, % Done ; Update the progress bar
 	}
 	
 	Gui,1:Destroy
