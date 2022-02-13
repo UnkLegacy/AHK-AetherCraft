@@ -50,8 +50,8 @@ Return
 ^!h::
 ; Ctrl+Alt+h - Show Help (the Readme file)
 FileRead, Readme, %A_ScriptDir%\Readme.md
-Gui, Add, Text,, %Readme%
-Gui, Show
+Gui,1:Add, Text,, %Readme%
+Gui,1:Show
 Return
 
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,16 +59,16 @@ Return
 f6::
 ; F6 - Market Board Scan
 GoSub ReadIni
-Gui, Add, Text,, Total Items (Blank = 100):	; Label for total items
-Gui, Add, Edit, w75 vTotal ym  ; The ym option starts a new column of controls.
-Gui, Add, Button, gScan, &Scan ; The function Scan will be run when the Scan button is pressed.
-Gui, Show,, Macro Settings
+Gui,1:Add, Text,, Total Items (Blank = 100):	; Label for total items
+Gui,1:Add, Edit, w75 vTotal ym  ; The ym option starts a new column of controls.
+Gui,1:Add, Button, gScan, &Scan ; The function Scan will be run when the Scan button is pressed.
+Gui,1:Show,, Macro Settings
 Return
 
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Scan:
-	Gui, Submit  ; Save the input from the user to each control's associated variable.
+	Gui,1:Submit  ; Save the input from the user to each control's associated variable.
 	
 	; Variables
 	Delay = 500 ; in milliseconds, increase this number to go slower.
@@ -144,13 +144,14 @@ Scan:
 	
 	Remaining := Total - Done
 	
+	Gui,1:Destroy
+	
 	; Let user know the script is finished
 	If (Breakloop)
 		MsgBox, Scanning stopped by user. %Done% of %Total% scanned. %Remaining% remaining.
 	Else
 		MsgBox, Scanning by AHK completed.
 	
-Gui, Destroy
 Return
 
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,21 +159,28 @@ Return
 f10::
 ; F10 - Auto Craft
 GoSub ReadIni
-Gui, Add, Text,, Total Crafts or QS Loops:	; Label for total crafts
-Gui, Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
-Gui, Add, Text,, Macro button (eg, Numpad1):  ; Label for which button the crafting macro resides on
-Gui, Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
-Gui, Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
-Gui, Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
-Gui, Add, Button, Default xs section gCraft, &Craft ; The function Craft will be run when the Craft button is pressed.
-Gui, Add, Button, gQuickSynth ys xs+50, &QuickSynth ; The function Craft will be run when the Craft button is pressed.
-Gui, Show,, Macro Settings
+Gui,1:Add, Text,, Total Crafts or QS Loops:	; Label for total crafts
+Gui,1:Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
+Gui,1:Add, Text,, Macro button (eg, Numpad1):  ; Label for which button the crafting macro resides on
+Gui,1:Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
+Gui,1:Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
+Gui,1:Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
+Gui,1:Add, Button, Default xs section gCraft, &Craft ; The function Craft will be run when the Craft button is pressed.
+Gui,1:Add, Button, gQuickSynth ys xs+50, &QuickSynth ; The function Craft will be run when the Craft button is pressed.
+Gui,1:Show,, Macro Settings
+
 Return
 
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Craft:
-	Gui, Submit  ; Save the input from the user to each control's associated variable.
+	Gui,1:Submit  ; Save the input from the user to each control's associated variable.
+	
+	; Make the Progress Bar
+	Gui,2:Add,Progress,x10 y10 w310 h30 BackgroundBlack cMaroon vDone Range0-%craftTotal%,0
+	
+	Gui,1:Hide
+	Gui,2:Show,, Crafting Progress
 	
 	; Write user settings back to ini file.  Only if they changed.
 	If (Total != craftTotal)
@@ -193,6 +201,9 @@ Craft:
 	
 	Breakloop := false
 	Done = 0
+	
+	; Reset Progress Bar
+	GuiControl,2: ,Done, % Done
 	
 	; Let user know the script is starting
 	WinActivate, %GameTitle%
@@ -225,12 +236,16 @@ Craft:
 			Break
 			
 		Done++ ; +1 item done, yay
+		GuiControl,2: ,Done, % Done ; Update the progress bar
 		
 		If (Total = A_Index)
 			Sleep, SleepTime - 3000 ; No need to wait if this is the last item we're crafting.
 		else
 			Sleep, SleepTime ; Wait for crafting macro to finish
 	}
+	
+	Gui,1:Destroy
+	Gui,2:Destroy
 
 	If (Breakloop)
 		{
@@ -241,13 +256,12 @@ Craft:
 	Else
 		MsgBox, Crafting by AHK completed.
 	
-Gui, Destroy
 Return
 
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 QuickSynth:
-	Gui, Submit  ; Save the input from the user to each control's associated variable.
+	Gui,1:Submit  ; Save the input from the user to each control's associated variable.
 
 	; Write user settings back to ini file.  Only if they changed.
 	If (Total != craftTotal)
@@ -331,6 +345,8 @@ QuickSynth:
 	
 	} ; End Loop, %Total%
 	
+	Gui,1:Destroy
+	
 	If (Breakloop)
 		{
 		MsgBox, QuickSynth stopped by user. %Done% of %Total% complete.
@@ -339,8 +355,7 @@ QuickSynth:
 		}
 	Else
 		MsgBox, QuickSynth by AHK completed.
-	
-Gui, Destroy
+		
 Return
 
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -362,7 +377,8 @@ RemoveTrayTip:
 
 ; Closes windows properly
 GuiClose:
-	Gui, Destroy
+	Gui,1:Destroy
+	Gui,2:Destroy
 	Return
 	
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
