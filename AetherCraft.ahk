@@ -18,7 +18,7 @@ GitHub_Repo := "AHK-AetherCraft"
 
 GoSub CreateIfNoExist
 
-if AutoUpdate
+If AutoUpdate
 	{
 	#include %A_ScriptDir%\AutoUpdate.ahk
 	}
@@ -162,11 +162,13 @@ GoSub ReadIni
 Gui,1:Add, Text,, Total Crafts or QS Loops:	; Label for total crafts
 Gui,1:Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
 Gui,1:Add, Text,, Macro button (eg, Numpad1):  ; Label for which button the crafting macro resides on
+Gui, Add, Checkbox, Checked vEnableProgressBar, Display progress bar?
 Gui,1:Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
 Gui,1:Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
 Gui,1:Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
 Gui,1:Add, Button, Default xs section gCraft, &Craft ; The function Craft will be run when the Craft button is pressed.
 Gui,1:Add, Button, gQuickSynth ys xs+50, &QuickSynth ; The function Craft will be run when the Craft button is pressed.
+Gui,1:Add, Button, gTrialSynth ys xs+135, &TrialSynth ; The function Craft will be run when the Craft button is pressed.
 Gui,1:Show,, Macro Settings
 
 Return
@@ -177,11 +179,14 @@ Craft:
 	Gui,1:Submit  ; Save the input from the user to each control's associated variable.
 	
 	; Make the Progress Bar
-	Gui,2:Add,Progress,x10 y10 w310 h30 BackgroundBlack cMaroon vDone Range0-%craftTotal%,0
-	
-	Gui,1:Hide
-	Gui,2:Show,, Crafting Progress
-	Gui,2:+AlwaysOnTop
+	if (EnableProgressBar)
+	{
+		Gui,2:Add,Progress,x10 y10 w310 h30 BackgroundBlack cMaroon vDone Range0-%craftTotal%,0
+		
+		Gui,1:Hide
+		Gui,2:Show,, Crafting Progress
+		Gui,2:+AlwaysOnTop
+	}
 	
 	; Write user settings back to ini file.  Only if they changed.
 	If (Total != craftTotal)
@@ -242,7 +247,8 @@ Craft:
 			Sleep, SleepTime ; Wait for crafting macro to finish
 			
 		Done++ ; +1 item done, yay
-		GuiControl,2: ,Done, % Done ; Update the progress bar
+		If (EnableProgressBar)
+			GuiControl,2: ,Done, % Done ; Update the progress bar
 	}
 	
 	Gui,1:Destroy
@@ -323,7 +329,7 @@ QuickSynth:
 		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit Synthesize, this starts crafting.
 		Sleep, Delay
 		
-		if (A_Index = 1)
+		If (A_Index = 1)
 			Sleep, Delay * slowDelay ; Wait for us to sit down
 		else
 			Sleep, Delay * fastDelay ; or dont
@@ -357,6 +363,100 @@ QuickSynth:
 	Else
 		MsgBox, QuickSynth by AHK completed.
 		
+Return
+
+TrialSynth:
+	Gui,1:Submit  ; Save the input from the user to each control's associated variable.
+	
+	; Make the Progress Bar
+	If (EnableProgressBar)
+	{
+		Gui,2:Add,Progress,x10 y10 w310 h30 BackgroundBlack cMaroon vDone Range0-%craftTotal%,0
+		
+		Gui,1:Hide
+		Gui,2:Show,, Crafting Progress
+		Gui,2:+AlwaysOnTop
+	}
+	
+	; Write user settings back to ini file.  Only if they changed.
+	If (Total != craftTotal)
+		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal
+	If (Time != craftTime)
+		IniWrite, "%Time%", %IniLocation%, LastCraft, CraftTime
+	If (MacroButton != craftButton)
+		IniWrite, "%MacroButton%", %IniLocation%, LastCraft, CraftMacroButton
+	
+	; Variables
+	SleepTime := (Time * 1000) + 1000 ; Add 1 second to macro time
+	
+	; Estimate Completion Time
+	totalDelayTime := (Delay * 2) + SleepTime + (Delay * fastDelay) ;// Total time for 1 loop of not first or last item
+	totalTime := (totalDelayTime * (Total - 1)) + (Delay * slowDelay) + (SleepTime - 3000) ;// Add first craft slowness and last craft fastness
+	totalCraftTimeMinutes := Floor((totalTime / 1000) / 60)
+	totalCraftTimeSeconds := Round(Mod((totalTime / 1000),60))
+	
+	Breakloop := false
+	Done = 0
+	
+	; Reset Progress Bar
+	GuiControl,2: ,Done, % Done
+	
+	; Let user know the script is starting
+	WinActivate, %GameTitle%
+	Sleep, Delay
+	Send, /
+	Sleep, Delay * quickDelay
+	Send, echo Crafting by AHK started. Complete ETA: %totalCraftTimeMinutes%m %totalCraftTimeSeconds%s <se.13>{enter}
+	Sleep, Delay
+	
+	Loop, %Total%
+	{
+		; Check for user to break
+		If Breakloop
+			Break
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Select the recipe
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%goLeft%}, %Game% ; Move left
+		Sleep, Delay * quickDelay
+		ControlSend, %AHKParent%, {%goLeft%}, %Game% ; Move left
+		Sleep, Delay * quickDelay
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Hit Trial Synthesize
+		Sleep, Delay
+		ControlSend, %AHKParent%, {%Confirm%}, %Game% ; Starts crafting
+		
+		If (A_Index = 1)
+			Sleep, Delay * slowDelay ; Wait for us to sit down
+		else
+			Sleep, Delay * fastDelay ; or dont
+		
+		If Breakloop
+			Break
+		ControlSend, %AHKParent%, {%MacroButton%}, %Game% ; Hit your crafting macro button
+		If Breakloop
+			Break
+		
+		If (Total = A_Index)
+			Sleep, SleepTime - 3000 ; No need to wait if this is the last item we're crafting.
+		else
+			Sleep, SleepTime ; Wait for crafting macro to finish
+
+		Done++ ; +1 item done, yay
+		If (EnableProgressBar)
+			GuiControl,2: ,Done, % Done ; Update the progress bar
+	}
+	
+	Gui,1:Destroy
+	Gui,2:Destroy
+
+	If (Breakloop)
+		{
+		MsgBox, Crafting stopped by user. %Done% of %Total% complete.
+		Total := Total - Done
+		IniWrite, "%Total%", %IniLocation%, LastCraft, CraftTotal ; Update amount to craft to what was left when interrupted
+		}
+	Else
+		MsgBox, Crafting by AHK completed.
+	
 Return
 
 ; ////////////////////////////////////////////////////////////////////////////////////////////////////////////
