@@ -162,7 +162,7 @@ GoSub ReadIni
 Gui,1:Add, Text,, Total Crafts or QS Loops:	; Label for total crafts
 Gui,1:Add, Text,, Macro Duration(sec):	; Label for how long macro takes to run
 Gui,1:Add, Text,, Macro button (eg, Numpad1):  ; Label for which button the crafting macro resides on
-Gui, Add, Checkbox, Checked vEnableProgressBar, Display progress bar?
+Gui,1:Add, Checkbox, Checked vEnableProgressBar, Display progress bar?
 Gui,1:Add, Edit, w75 vTotal ym, %craftTotal%  ; The ym option starts a new column of controls.
 Gui,1:Add, Edit, w75 vTime, %craftTime% ; Time, in seconds to craft once.
 Gui,1:Add, Edit, w75 vMacroButton, %craftButton% ; Macro button
